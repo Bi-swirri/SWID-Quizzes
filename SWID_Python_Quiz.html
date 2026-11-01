@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SWID Quiz: Python Basics and Git</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222636;
+    --border: #2e3347;
+    --orange: #f5783a;
+    --orange-dim: #f5783a22;
+    --blue: #4a9eff;
+    --blue-dim: #4a9eff18;
+    --green: #3dd68c;
+    --green-dim: #3dd68c18;
+    --red: #ff5c5c;
+    --red-dim: #ff5c5c18;
+    --text: #e8eaf0;
+    --muted: #8b8fa8;
+    --code-bg: #0a0c12;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 60px;
+  }
+
+  .header {
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  h1 span { color: var(--orange); }
+  .subtitle { color: var(--muted); font-size: 14px; }
+
+  .scoreboard {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .score-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .score-box .val {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--orange);
+    line-height: 1;
+  }
+  .score-box .label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .streak-box .val { color: var(--green); }
+
+  .progress-wrap {
+    width: 100%;
+    max-width: 720px;
+    background: var(--surface);
+    border-radius: 99px;
+    height: 6px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--orange), var(--blue));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 720px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .q-num { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .q-tag {
+    font-size: 11px;
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    border-radius: 99px;
+    padding: 2px 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .question {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-family: 'IBM Plex Mono', Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    color: #c8d0e8;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: left;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--orange);
+    background: var(--orange-dim);
+    transform: translateX(3px);
+  }
+  .option-btn .opt-label {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .option-btn.correct { border-color: var(--green); background: var(--green-dim); }
+  .option-btn.correct .opt-label { background: var(--green); color: #0f1117; }
+  .option-btn.wrong { border-color: var(--red); background: var(--red-dim); }
+  .option-btn.wrong .opt-label { background: var(--red); color: #fff; }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); }
+  .feedback.wrong-fb { background: var(--red-dim); border: 1px solid var(--red); color: #ff8f8f; }
+
+  .nav { width: 100%; max-width: 720px; display: flex; justify-content: flex-end; }
+  .next-btn {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 32px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .next-btn:hover { opacity: 0.9; transform: scale(1.02); }
+  .next-btn.show { display: block; }
+
+  .results {
+    width: 100%; max-width: 720px;
+    text-align: center;
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .results.show { display: block; }
+  .results-emoji { font-size: 56px; margin-bottom: 12px; }
+  .results h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .results .score-big { font-size: 52px; font-weight: 700; color: var(--orange); margin: 20px 0 4px; line-height: 1; }
+  .results .score-label { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .results-grid .score-box .val { font-size: 22px; }
+
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .topic-card h3 {
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px; font-weight: 600;
+  }
+  .topic-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+  }
+  .topic-row:last-child { border-bottom: none; }
+  .topic-row .t-score { font-weight: 700; }
+  .t-full { color: var(--green); }
+  .t-mid { color: var(--text); }
+  .t-low { color: var(--red); }
+
+  .restart-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--orange);
+    color: var(--orange);
+    border-radius: 10px;
+    padding: 14px 32px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .restart-btn:hover { background: var(--orange-dim); }
+
+  .streak-flash {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%) translateY(-60px);
+    background: var(--green);
+    color: #0f1117;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .streak-flash.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="streak-flash" id="streakFlash">🔥 Streak!</div>
+
+<div class="header">
+  <div class="eyebrow">Solavise Women in Data · Python Basics and Git</div>
+  <h1>Python Basics<br>and <span>Git</span></h1>
+  <p class="subtitle" id="subtitle">20 questions · Variables, Strings, Conditionals, Lists &amp; Git</p>
+  <div class="scoreboard">
+    <div class="score-box">
+      <div class="val" id="scoreVal">0</div>
+      <div class="label">Score</div>
+    </div>
+    <div class="score-box streak-box">
+      <div class="val" id="streakVal">0</div>
+      <div class="label">Streak 🔥</div>
+    </div>
+    <div class="score-box">
+      <div class="val" id="qVal">1/20</div>
+      <div class="label">Question</div>
+    </div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar" style="width:0%"></div>
+</div>
+
+<div id="quizArea"></div>
+<div class="nav"><button class="next-btn" id="nextBtn">Next Question →</button></div>
+
+<div class="results" id="results">
+  <div class="results-emoji" id="resultsEmoji">🎉</div>
+  <h2 id="resultsTitle">Quiz Complete!</h2>
+  <div class="score-big" id="resultsBig">0/20</div>
+  <div class="score-label" id="resultsLabel">Keep practising!</div>
+  <div class="results-grid">
+    <div class="score-box"><div class="val" id="rCorrect">0</div><div class="label">Correct</div></div>
+    <div class="score-box"><div class="val" id="rWrong">0</div><div class="label">Wrong</div></div>
+    <div class="score-box streak-box"><div class="val" id="rStreak">0</div><div class="label">Best Streak</div></div>
+  </div>
+  <div class="topic-card">
+    <h3>Your score by topic</h3>
+    <div id="topicRows"></div>
+  </div>
+  <button class="restart-btn" onclick="restart()">Try Again</button>
+</div>
+
+<script>
+// ─── Question bank ───────────────────────────────────────────────────────────
+// Each question has:
+//   correctFeedback  shown when the student picks the right answer
+//   wrongFeedback    shown when the student picks a wrong answer
+// ─────────────────────────────────────────────────────────────────────────────
+const ALL_QUESTIONS = [
+  {
+    tag: "Getting started",
+    question: "Which function shows output on the screen?",
+    options: [
+      { text: "show()",    correct: false },
+      { text: "print()",   correct: true  },
+      { text: "display()", correct: false },
+      { text: "output()",  correct: false }
+    ],
+    correctFeedback: "Well done! print() is the function we use to show text, numbers and other values on the screen.",
+    wrongFeedback: "Not quite. The correct answer is print(). It shows text, numbers and other values on the screen."
+  },
+  {
+    tag: "Data types",
+    question: "What is the data type of the value 1.73?",
+    options: [
+      { text: "int",   correct: false },
+      { text: "str",   correct: false },
+      { text: "float", correct: true  },
+      { text: "bool",  correct: false }
+    ],
+    correctFeedback: "Correct! A number with a decimal point is a float. Whole numbers like 12 are ints.",
+    wrongFeedback: "Not quite. 1.73 has a decimal point, so it is a float. Whole numbers like 12 are ints, text is a str, and True or False is a bool."
+  },
+  {
+    tag: "Operators",
+    question: "What does this code print?",
+    code: "print(17 // 2)",
+    options: [
+      { text: "8.5", correct: false },
+      { text: "8",   correct: true  },
+      { text: "9",   correct: false },
+      { text: "1",   correct: false }
+    ],
+    correctFeedback: "Correct! // is floor division. It gives only the whole part. 17 divided by 2 is 8.5, so the whole part is 8.",
+    wrongFeedback: "Not quite. The answer is 8. The // sign gives only the whole part of the division. 17 divided by 2 is 8.5, and the whole part is 8."
+  },
+  {
+    tag: "Operators",
+    question: "What does this code print?",
+    code: "print(17 % 2)",
+    options: [
+      { text: "8", correct: false },
+      { text: "0", correct: false },
+      { text: "1", correct: true  },
+      { text: "2", correct: false }
+    ],
+    correctFeedback: "Correct! % gives the remainder. 2 goes into 17 eight times (16), and 1 is left over.",
+    wrongFeedback: "Not quite. The answer is 1. The % sign gives the remainder. 2 goes into 17 eight times (that is 16), and 1 is left over."
+  },
+  {
+    tag: "Operators",
+    question: "Which symbol is used to COMPARE two values to see if they are equal?",
+    options: [
+      { text: "=",  correct: false },
+      { text: "==", correct: true  },
+      { text: "!=", correct: false },
+      { text: "=>", correct: false }
+    ],
+    correctFeedback: "Correct! == compares two values. A single = stores a value in a variable.",
+    wrongFeedback: "Not quite. The correct symbol is ==. A single = stores a value in a variable, and != checks if two values are NOT equal."
+  },
+  {
+    tag: "Operators",
+    question: "What does this code print?",
+    code: "age = 29\nhas_id = True\nprint(age < 18 or has_id)",
+    options: [
+      { text: "True",  correct: true  },
+      { text: "False", correct: false },
+      { text: "29",    correct: false },
+      { text: "Error", correct: false }
+    ],
+    correctFeedback: "Correct! With or, only ONE side needs to be true. age < 18 is False, but has_id is True, so the result is True.",
+    wrongFeedback: "Not quite. The answer is True. With or, only ONE side needs to be true. age < 18 is False, but has_id is True."
+  },
+  {
+    tag: "Changing types",
+    question: "What does this code print?",
+    code: "print(int(0.99))",
+    options: [
+      { text: "1",     correct: false },
+      { text: "0",     correct: true  },
+      { text: "0.99",  correct: false },
+      { text: "Error", correct: false }
+    ],
+    correctFeedback: "Correct! int() cuts off the decimal part. It does not round. So 0.99 becomes 0.",
+    wrongFeedback: "Not quite. The answer is 0. int() cuts off the decimal part. It does not round up, so 0.99 becomes 0."
+  },
+  {
+    tag: "Strings",
+    question: "What does this code print?",
+    code: 'print("Ha" * 3)',
+    options: [
+      { text: "Ha3",      correct: false },
+      { text: "HaHaHa",   correct: true  },
+      { text: "Ha Ha Ha", correct: false },
+      { text: "Error",    correct: false }
+    ],
+    correctFeedback: "Correct! The * sign repeats a string. \"Ha\" repeated 3 times is HaHaHa.",
+    wrongFeedback: "Not quite. The answer is HaHaHa. The * sign repeats a string, and it does not add any spaces between the copies."
+  },
+  {
+    tag: "Strings",
+    question: "What does \\n do inside a string?",
+    options: [
+      { text: "Gives a tab space",         correct: false },
+      { text: "Deletes the text",          correct: false },
+      { text: "Moves to the next line",    correct: true  },
+      { text: "Makes the text capital",    correct: false }
+    ],
+    correctFeedback: "Correct! \\n starts a new line. \\t gives a tab space.",
+    wrongFeedback: "Not quite. \\n moves to the next line. \\t is the one that gives a tab space."
+  },
+  {
+    tag: "Strings",
+    question: "What does this code print?",
+    code: 'word = "Python"\nprint(word[2])',
+    options: [
+      { text: "y", correct: false },
+      { text: "t", correct: true  },
+      { text: "h", correct: false },
+      { text: "P", correct: false }
+    ],
+    correctFeedback: "Correct! Counting starts at 0: P is 0, y is 1, t is 2. So word[2] is t.",
+    wrongFeedback: "Not quite. The answer is t. Counting starts at 0, so P is 0, y is 1 and t is 2."
+  },
+  {
+    tag: "Strings",
+    question: "What does this code print?",
+    code: 'word = "Python"\nprint(word[0:3])',
+    options: [
+      { text: "Pyth",   correct: false },
+      { text: "Pyt",    correct: true  },
+      { text: "yth",    correct: false },
+      { text: "Python", correct: false }
+    ],
+    correctFeedback: "Correct! Slicing includes the start (0) but NOT the stop (3). It takes positions 0, 1 and 2: P, y, t.",
+    wrongFeedback: "Not quite. The answer is Pyt. Slicing includes the start number (0) but NOT the stop number (3), so it takes positions 0, 1 and 2."
+  },
+  {
+    tag: "Strings",
+    question: "What does this code print?",
+    code: 'word = "Python"\nprint(word[-4:])',
+    options: [
+      { text: "thon",  correct: true  },
+      { text: "Pyth",  correct: false },
+      { text: "n",     correct: false },
+      { text: "ython", correct: false }
+    ],
+    correctFeedback: "Correct! -4 means 4th from the end. From there to the end gives t, h, o, n.",
+    wrongFeedback: "Not quite. The answer is thon. -4 means 4th letter from the end, and the empty space after the colon means 'go to the end'."
+  },
+  {
+    tag: "Strings",
+    question: "What does this code print?",
+    code: 'name = "Pharel"\nprint("F" in name)',
+    options: [
+      { text: "True",  correct: false },
+      { text: "False", correct: true  },
+      { text: "F",     correct: false },
+      { text: "Error", correct: false }
+    ],
+    correctFeedback: "Correct! Python cares about capital and small letters. The name has a small f, not a capital F, so the answer is False.",
+    wrongFeedback: "Not quite. The answer is False. Python cares about capital and small letters. The name has a small f, not a capital F."
+  },
+  {
+    tag: "Conditionals",
+    question: "What does this code print?",
+    code: 'temperature = 20\n\nif temperature > 25:\n    print("Buy icecream")\nelse:\n    print("Drink tea")',
+    options: [
+      { text: "Buy icecream",  correct: false },
+      { text: "Drink tea",     correct: true  },
+      { text: "Both messages", correct: false },
+      { text: "Nothing",       correct: false }
+    ],
+    correctFeedback: "Correct! 20 is not greater than 25, so the if part is skipped and the else part runs.",
+    wrongFeedback: "Not quite. The answer is Drink tea. 20 is not greater than 25, so Python skips the if part and runs the else part."
+  },
+  {
+    tag: "Conditionals",
+    question: "Which grade does this code print?",
+    code: 'score = 75\n\nif score >= 80:\n    print("A")\nelif score >= 70 and score <= 79:\n    print("B")\nelif score >= 60 and score <= 69:\n    print("C")\nelse:\n    print("Average")',
+    options: [
+      { text: "A",       correct: false },
+      { text: "B",       correct: true  },
+      { text: "C",       correct: false },
+      { text: "Average", correct: false }
+    ],
+    correctFeedback: "Correct! 75 is not 80 or more, so the first check fails. 75 is between 70 and 79, so it prints B.",
+    wrongFeedback: "Not quite. The answer is B. 75 is not 80 or more, so the first check fails. Then 75 is between 70 and 79, so Python prints B and stops."
+  },
+  {
+    tag: "Lists",
+    question: "What does this code print?",
+    code: 'fruits = ["mangoes", "apples", "oranges"]\nprint(fruits[-1])',
+    options: [
+      { text: "mangoes", correct: false },
+      { text: "apples",  correct: false },
+      { text: "oranges", correct: true  },
+      { text: "Error",   correct: false }
+    ],
+    correctFeedback: "Correct! Index -1 is the LAST item in a list.",
+    wrongFeedback: "Not quite. The answer is oranges. Index -1 always gives the LAST item in a list."
+  },
+  {
+    tag: "Lists",
+    question: "What is the difference between append() and extend()?",
+    options: [
+      { text: "There is no difference",                                                       correct: false },
+      { text: "append() adds one item. extend() adds every item from another list",           correct: true  },
+      { text: "append() removes an item. extend() adds an item",                              correct: false },
+      { text: "append() works on strings. extend() works on lists",                           correct: false }
+    ],
+    correctFeedback: "Correct! append() adds a single item to the end. extend() takes another list and adds all of its items.",
+    wrongFeedback: "Not quite. append() adds ONE item to the end of the list. extend() takes another list and adds ALL of its items."
+  },
+  {
+    tag: "Lists",
+    question: "What will fruits be after this code runs?",
+    code: 'fruits = ["a", "b", "c", "d", "e"]\ndel fruits[1:3]',
+    options: [
+      { text: '["a", "d", "e"]',      correct: true  },
+      { text: '["a", "c", "d", "e"]', correct: false },
+      { text: '["a", "e"]',           correct: false },
+      { text: '["b", "c"]',           correct: false }
+    ],
+    correctFeedback: "Correct! fruits[1:3] means positions 1 and 2 (b and c). Position 3 is not included, so d stays.",
+    wrongFeedback: "Not quite. The answer is [\"a\", \"d\", \"e\"]. fruits[1:3] means positions 1 and 2 (b and c). The stop number 3 is not included, so d stays."
+  },
+  {
+    tag: "Git and GitHub",
+    question: "What is the difference between Git and GitHub?",
+    options: [
+      { text: "They are the same thing",                                           correct: false },
+      { text: "Git is a website. GitHub is a tool on your computer",               correct: false },
+      { text: "Git tracks changes on your computer. GitHub stores projects online", correct: true  },
+      { text: "Git is only for Python. GitHub is only for Excel",                  correct: false }
+    ],
+    correctFeedback: "Correct! Git is the tool that tracks your changes. GitHub is the website where you store and share your Git projects.",
+    wrongFeedback: "Not quite. Git is the tool on your computer that tracks your changes. GitHub is the website where you store and share your Git projects online."
+  },
+  {
+    tag: "Git and GitHub",
+    question: "Which is the correct order to save your work and send it to GitHub?",
+    options: [
+      { text: "git push, git commit, git add", correct: false },
+      { text: "git commit, git push, git add", correct: false },
+      { text: "git add, git commit, git push", correct: true  },
+      { text: "git add, git push, git commit", correct: false }
+    ],
+    correctFeedback: "Correct! First stage your files (add), then save a snapshot (commit), then send it online (push).",
+    wrongFeedback: "Not quite. The order is git add, then git commit, then git push. Stage your files, save a snapshot, then send it online."
+  }
+];
+
+const TOTAL = ALL_QUESTIONS.length;
+
+// ─── Utility ─────────────────────────────────────────────────────────────────
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function esc(s) {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let questions, current, score, streak, bestStreak, answered, topicStats;
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+function init() {
+  // Shuffle the question order, and shuffle the options inside each question.
+  // Every option carries its own "correct" flag, so no index mapping is needed.
+  questions = shuffleArray(ALL_QUESTIONS).map(q => ({ ...q, options: shuffleArray(q.options) }));
+
+  current = 0; score = 0; streak = 0; bestStreak = 0; answered = false; topicStats = {};
+
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('streakVal').textContent = 0;
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('quizArea').style.display = '';
+  document.querySelector('.progress-wrap').style.display = '';
+  document.querySelector('.nav').style.display = '';
+
+  renderQuestion();
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function renderQuestion() {
+  answered = false;
+  const q = questions[current];
+  const labels = ['A', 'B', 'C', 'D'];
+
+  document.getElementById('qVal').textContent = (current + 1) + '/' + TOTAL;
+  document.getElementById('progressBar').style.width = ((current / TOTAL) * 100) + '%';
+  document.getElementById('nextBtn').classList.remove('show');
+  document.getElementById('nextBtn').textContent = (current === TOTAL - 1) ? 'See Results →' : 'Next Question →';
+
+  const codeHtml = q.code
+    ? '<div class="code-block">' + esc(q.code) + '</div>'
+    : '';
+
+  const optionsHtml = q.options.map((opt, i) =>
+    '<button class="option-btn" data-index="' + i + '" onclick="choose(' + i + ')">' +
+      '<span class="opt-label">' + labels[i] + '</span>' +
+      '<span>' + esc(opt.text) + '</span>' +
+    '</button>'
+  ).join('');
+
+  document.getElementById('quizArea').innerHTML =
+    '<div class="card">' +
+      '<div class="q-meta">' +
+        '<span class="q-num">Question ' + (current + 1) + ' of ' + TOTAL + '</span>' +
+        '<span class="q-tag">' + esc(q.tag) + '</span>' +
+      '</div>' +
+      '<div class="question">' + esc(q.question) + '</div>' +
+      codeHtml +
+      '<div class="options">' + optionsHtml + '</div>' +
+      '<div class="feedback" id="feedback"></div>' +
+    '</div>';
+}
+
+// ─── Answer handler ───────────────────────────────────────────────────────────
+function choose(clickedIndex) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[current];
+  const isCorrect = q.options[clickedIndex].correct;
+  const btns = document.querySelectorAll('.option-btn');
+
+  btns.forEach(b => { b.disabled = true; });
+  btns[clickedIndex].classList.add(isCorrect ? 'correct' : 'wrong');
+
+  // Always show the right answer, even if the student was wrong
+  btns.forEach((b, i) => {
+    if (q.options[i].correct) b.classList.add('correct');
+  });
+
+  // Track the score by topic
+  if (!topicStats[q.tag]) topicStats[q.tag] = { right: 0, total: 0 };
+  topicStats[q.tag].total++;
+
+  if (isCorrect) {
+    score++;
+    streak++;
+    topicStats[q.tag].right++;
+    if (streak > bestStreak) bestStreak = streak;
+    if (streak >= 3) showStreakFlash();
+  } else {
+    streak = 0;
+  }
+
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('streakVal').textContent = streak;
+
+  const fb = document.getElementById('feedback');
+  fb.textContent = (isCorrect ? '✅ ' : '❌ ') + (isCorrect ? q.correctFeedback : q.wrongFeedback);
+  fb.className = 'feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+
+  document.getElementById('progressBar').style.width = (((current + 1) / TOTAL) * 100) + '%';
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+// ─── Streak flash ─────────────────────────────────────────────────────────────
+function showStreakFlash() {
+  const el = document.getElementById('streakFlash');
+  el.textContent = '🔥 ' + streak + ' in a row!';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ─── Next button ──────────────────────────────────────────────────────────────
+document.getElementById('nextBtn').addEventListener('click', () => {
+  current++;
+  if (current >= TOTAL) {
+    showResults();
+  } else {
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+// ─── Results ──────────────────────────────────────────────────────────────────
+function showResults() {
+  document.getElementById('quizArea').style.display = 'none';
+  document.querySelector('.nav').style.display = 'none';
+  document.getElementById('progressBar').style.width = '100%';
+
+  const pct = Math.round((score / TOTAL) * 100);
+  let emoji = '💪', title = 'Keep practising!', label = 'Read the notebook again, run the code cells and try once more.';
+  if (pct === 100) { emoji = '🏆'; title = 'Perfect Score!'; label = 'Outstanding! You got every question right.'; }
+  else if (pct >= 80) { emoji = '🎉'; title = 'Great work!'; label = 'You have a solid grip on the Python basics.'; }
+  else if (pct >= 60) { emoji = '👏'; title = 'Good effort!'; label = 'A little more practice and you will have this down.'; }
+
+  document.getElementById('resultsEmoji').textContent = emoji;
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsBig').textContent = score + '/' + TOTAL;
+  document.getElementById('resultsLabel').textContent = label;
+  document.getElementById('rCorrect').textContent = score;
+  document.getElementById('rWrong').textContent = TOTAL - score;
+  document.getElementById('rStreak').textContent = bestStreak;
+
+  // Score by topic
+  const rows = Object.keys(topicStats).map(tag => {
+    const s = topicStats[tag];
+    const cls = s.right === s.total ? 't-full' : (s.right / s.total < 0.5 ? 't-low' : 't-mid');
+    return '<div class="topic-row"><span>' + esc(tag) + '</span>' +
+           '<span class="t-score ' + cls + '">' + s.right + ' / ' + s.total + '</span></div>';
+  }).join('');
+  document.getElementById('topicRows').innerHTML = rows;
+
+  document.getElementById('results').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() { init(); }
+
+init();
+</script>
+</body>
+</html>
